@@ -58,3 +58,7 @@ exports.removeById = (userId) => {
         })
     });
 };
+
+exports.findByEmail = (email) => {
+    return User.find({ email });
+};
