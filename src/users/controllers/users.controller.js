@@ -1,14 +1,19 @@
 const UserModel = require("../models/users.model");
 const crypto = require('crypto');
 
-exports.insert = (req, res) => {
+exports.insert = async (req, res) => {
     let salt = crypto.randomBytes(16).toString('base64');
     let hash = crypto.createHmac('sha512', salt).update(req.body.password).digest('base64');
     req.body.password = salt + '$' + hash;
     req.body.permissionLevel = 1;
-    UserModel.createUser(req.body).then((result) => {
-        res.status(201).send({ id: result._id });
-    });
+    
+    let userCreated = await UserModel.createUser(req.body)
+    
+    if (userCreated) {
+        res.status(201).send({ id: userCreated._id });
+    } else {
+        res.status(403).send('Email is already being used.');
+    }
 };
 
 exports.getById = (req, res) => {

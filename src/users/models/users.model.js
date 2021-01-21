@@ -11,9 +11,20 @@ const userSchema = new Schema({
 
 const User = mongoose.model('Users', userSchema);
 
-exports.createUser = (userData) => {
+exports.createUser = async (userData) => {
     const user = new User(userData);
-    return user.save();
+
+    try {
+        let emailExists = await User.findOne({ email: userData.email });
+
+        if (emailExists) {
+            throw new Error();
+        }
+
+        return user.save();
+    } catch (err) {
+        return;
+    }
 };
 
 exports.findById = (id) => {
